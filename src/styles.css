@@ -28,8 +28,10 @@ a { color: inherit; text-decoration: none; }
 svg { width: 1.2rem; height: 1.2rem; stroke-width: 1.8; }
 
 .brand { width: 168px; height: 72px; display: inline-flex; align-items: center; color: var(--white); }
-.brand__logo-crop { position: relative; width: 168px; height: 72px; display: block; overflow: hidden; background: #030303; }
-.brand__logo-crop img { position: absolute; width: 527px; max-width: none; left: -54px; top: -17px; }
+.brand { display: inline-flex; align-items: center; }
+.brand__logo { display: block; width: 176px; height: auto; object-fit: contain; }
+.brand__logo--light { display: none; }
+.brand--compact .brand__logo { width: 145px; }
 .brand--compact { width: 135px; transform: scale(.8); transform-origin: left center; }
 
 .primary-button { min-height: 3.35rem; display: inline-flex; align-items: center; justify-content: center; gap: .75rem; padding: .8rem 1.25rem; border: 1px solid #ffdb4d; background: linear-gradient(135deg, #ffc400, #c78600); color: #080808; font-weight: 800; border-radius: .2rem; box-shadow: 0 10px 32px rgba(255,190,0,.2); transition: transform .2s ease, filter .2s ease; }
@@ -329,6 +331,8 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
   --blue-dark: #6f4a00;
 }
 [data-theme='light'] body { color: #171a1f; background: var(--bg); }
+[data-theme='light'] .brand__logo--dark { display: none; }
+[data-theme='light'] .brand__logo--light { display: block; }
 [data-theme='light'] .theme-toggle { color: #20242a; border-color: #c7cdd6; background: rgba(255,255,255,.95); box-shadow: 0 12px 32px rgba(31,41,55,.14); }
 
 [data-theme='light'] .login-page,

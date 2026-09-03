@@ -15,6 +15,8 @@ El botón flotante de apariencia permite alternar todo el campus entre modo oscu
 
 Si la base ya estaba creada, ejecuta solamente `Migracion_Primer_Ingreso_Contrasena.sql`. No vuelvas a crear el proyecto de Supabase.
 
+Si vas a conectar el CRM, ejecuta además `Migracion_Integracion_CRM_Campus.sql`. Esta migración conserva los alumnos actuales y evita que cualquier cuenta nueva reciba cursos automáticamente.
+
 ## 2. Variables de entorno
 
 Copia `.env.example` como `.env.local` y coloca:
@@ -24,10 +26,20 @@ VITE_SUPABASE_URL=https://TU-PROYECTO.supabase.co
 VITE_SUPABASE_ANON_KEY=TU_CLAVE_ANON_PUBLICA
 SUPABASE_URL=https://TU-PROYECTO.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=TU_CLAVE_SERVICE_ROLE_PRIVADA
+CAMPUS_PROVISIONING_SECRET=TU_SECRETO_ALEATORIO_DE_32_CARACTERES_O_MAS
 ```
 
 En Vercel agrega las mismas variables en **Project Settings → Environment Variables**.
 La clave `SUPABASE_SERVICE_ROLE_KEY` no debe llevar el prefijo `VITE_` ni utilizarse en archivos del navegador.
+`CAMPUS_PROVISIONING_SECRET` tampoco debe llevar `VITE_`. Debe contener exactamente el mismo valor que la variable privada del CRM.
+
+## Integración con Eagles CRM
+
+El endpoint privado `/api/integrations/crm-provision` crea o reutiliza un alumno, lo inscribe al curso y devuelve una contraseña temporal solamente cuando la cuenta acaba de crearse. El Campus guarda el `academy_customers.id` del CRM como `student_profiles.crm_customer_id` y como referencia en `external_enrollments`; repetir la solicitud o usar otro lead del mismo cliente no crea alumnos duplicados.
+
+El producto `workshop` del CRM (Workshop High Ticket/Elite) se asigna al curso interno `seminario-empresarial`, que conserva ese ID para no perder el progreso existente.
+
+Después de agregar o modificar variables en Vercel, vuelve a desplegar el proyecto.
 
 ## Panel administrativo
 

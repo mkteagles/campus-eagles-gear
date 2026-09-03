@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const allowedRoles = new Set(['admin', 'student'])
 const allowedStatuses = new Set(['active', 'inactive', 'blocked'])
+const defaultCourseId = 'seminario-empresarial'
 
 function normalizeEaglesEmail(value) {
   const input = String(value || '').trim().toLowerCase()
@@ -100,6 +101,22 @@ export default async function handler(req, res) {
     if (profileError) {
       await client.auth.admin.deleteUser(created.user.id)
       return send(res, 500, { error: 'La cuenta no pudo terminar de configurarse.' })
+    }
+
+    if (role === 'student') {
+      const { error: enrollmentError } = await client
+        .from('course_enrollments')
+        .upsert({
+          user_id: created.user.id,
+          course_id: defaultCourseId,
+          status: 'active',
+          expires_at: null,
+        }, { onConflict: 'user_id,course_id' })
+
+      if (enrollmentError) {
+        await client.auth.admin.deleteUser(created.user.id)
+        return send(res, 500, { error: 'La cuenta se creó, pero no pudo inscribirse al curso.' })
+      }
     }
 
     return send(res, 201, { user: profile })
