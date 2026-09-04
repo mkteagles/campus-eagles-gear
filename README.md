@@ -6,6 +6,8 @@ El temario lateral puede ocultarse en computadora para ver la clase en modo enfo
 
 El botón flotante de apariencia permite alternar todo el campus entre modo oscuro y claro. La elección también se conserva en el dispositivo de cada usuario.
 
+Al completar la última lección, el alumno entra a una pantalla de cierre que confirma el 100% del curso y le recuerda mantenerse pendiente de los grupos oficiales y de próximas capacitaciones. El cierre solo se abre cuando todas las clases están marcadas como terminadas.
+
 ## 1. Configurar Supabase
 
 1. Crea un proyecto en Supabase.

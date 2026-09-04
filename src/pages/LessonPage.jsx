@@ -38,6 +38,14 @@ export default function LessonPage() {
     if (next) navigate(`/curso/${course.id}/leccion/${next.id}`)
   }
 
+  async function finishCourse() {
+    if (!isCompleted) {
+      const result = await toggleLesson(lesson.id)
+      if (!result.success) return
+    }
+    navigate(`/curso/${course.id}/completado`)
+  }
+
   function toggleCourseMenu() {
     if (window.matchMedia('(max-width: 980px)').matches) {
       setMobileMenuOpen((current) => !current)
@@ -83,7 +91,7 @@ export default function LessonPage() {
 
           <div className="lesson-navigation">
             {previous ? <button onClick={() => navigate(`/curso/${course.id}/leccion/${previous.id}`)}><ChevronLeft /><span><small>ANTERIOR</small><strong>{previous.title}</strong></span></button> : <span />}
-            {next ? <button className="next" onClick={completeAndContinue}><span><small>SIGUIENTE</small><strong>{next.title}</strong></span><ChevronRight /></button> : <button className="next" onClick={() => toggleLesson(lesson.id)}><span><small>FINALIZAR</small><strong>Completar el curso</strong></span><CheckCircle2 /></button>}
+            {next ? <button className="next" onClick={completeAndContinue}><span><small>SIGUIENTE</small><strong>{next.title}</strong></span><ChevronRight /></button> : <button className="next" disabled={loading} onClick={finishCourse}><span><small>FINALIZAR</small><strong>{isCompleted ? 'Ver cierre del curso' : 'Completar el curso'}</strong></span><CheckCircle2 /></button>}
           </div>
         </div>
       </section>
