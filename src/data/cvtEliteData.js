@@ -1,107 +1,99 @@
 // ============================================================
 // CVT ELITE · EAGLES GEAR SOLUTIONS
 // ============================================================
-// ESTE ES EL ARCHIVO QUE VAS A EDITAR CUANDO TENGAS LOS VIDEOS.
+// Videos recibidos el 09/09/2026.
 //
-// 1) Si al final son menos de 25 módulos, cambia MODULE_COUNT.
-// 2) Pega cada ID de Vimeo en CVT_ELITE_VIDEO_IDS.
-// 3) Si quieres cambiar los nombres, edita CVT_ELITE_MODULE_TITLES.
+// Estructura actual:
+//   Módulo 01 · Grabaciones en Vivo — CVT JF011 y JF017 (11 videos)
+//   Módulo 02 · Mentoría Elite — CVT JF015 (7 videos)
 //
-// Ejemplo Vimeo:
-// https://vimeo.com/123456789  -> ID = 123456789
+// IMPORTANTE:
+// El video 07 del módulo JF015 llegó con el mismo ID que el video 02
+// (1123980579). Se conserva exactamente como fue enviado para no perder
+// ningún lugar del temario. Cuando llegue el ID correcto, cambia únicamente
+// ese videoId.
 // ============================================================
 
 export const CVT_ELITE_COURSE_ID = 'cvt-elite'
 
-export const CVT_ELITE_MODULE_COUNT = 25
+const liveJf011Jf017 = [
+  '1074691006',
+  '1074794599',
+  '1074963068',
+  '1074974361',
+  '1075165504',
+  '1075543141',
+  '1075675695',
+  '1075678976',
+  '1075167409',
+  '1075692750',
+  '1075701026',
+]
 
-export const CVT_ELITE_VIDEO_IDS = {
-  1: '',
-  2: '',
-  3: '',
-  4: '',
-  5: '',
-  6: '',
-  7: '',
-  8: '',
-  9: '',
-  10: '',
-  11: '',
-  12: '',
-  13: '',
-  14: '',
-  15: '',
-  16: '',
-  17: '',
-  18: '',
-  19: '',
-  20: '',
-  21: '',
-  22: '',
-  23: '',
-  24: '',
-  25: '',
+const mentorshipJf015 = [
+  '1123971353',
+  '1123980579',
+  '1123981975',
+  '1123979509',
+  '1123975455',
+  '1123980000',
+  '1123980579', // Duplicado recibido por WhatsApp; reemplazar cuando llegue el ID correcto.
+]
+
+function buildLessons({ prefix, label, titlePrefix, videoIds, intro, summary }) {
+  return videoIds.map((videoId, index) => {
+    const lessonNumber = index + 1
+    const padded = String(lessonNumber).padStart(2, '0')
+
+    return {
+      id: `${prefix}-${padded}`,
+      label: `${label} ${padded}`,
+      title: `${titlePrefix} · Parte ${padded}`,
+      duration: '',
+      videoId,
+      videoProvider: 'vimeo',
+      sourceHint: 'cvtEliteData.js',
+      intro: `${intro} Esta es la parte ${lessonNumber} de la serie.`,
+      summary,
+    }
+  })
 }
-
-export const CVT_ELITE_MODULE_TITLES = {
-  1: 'Módulo 1',
-  2: 'Módulo 2',
-  3: 'Módulo 3',
-  4: 'Módulo 4',
-  5: 'Módulo 5',
-  6: 'Módulo 6',
-  7: 'Módulo 7',
-  8: 'Módulo 8',
-  9: 'Módulo 9',
-  10: 'Módulo 10',
-  11: 'Módulo 11',
-  12: 'Módulo 12',
-  13: 'Módulo 13',
-  14: 'Módulo 14',
-  15: 'Módulo 15',
-  16: 'Módulo 16',
-  17: 'Módulo 17',
-  18: 'Módulo 18',
-  19: 'Módulo 19',
-  20: 'Módulo 20',
-  21: 'Módulo 21',
-  22: 'Módulo 22',
-  23: 'Módulo 23',
-  24: 'Módulo 24',
-  25: 'Módulo 25',
-}
-
-const modules = Array.from({ length: CVT_ELITE_MODULE_COUNT }, (_, index) => {
-  const number = index + 1
-  const padded = String(number).padStart(2, '0')
-  const title = CVT_ELITE_MODULE_TITLES[number] || `Módulo ${number}`
-
-  return {
-    id: `cvt-elite-modulo-${padded}`,
-    number: padded,
-    title,
-    description: `Contenido exclusivo CVT Elite · Módulo ${number}.`,
-    lessons: [
-      {
-        id: `cvt-elite-video-${padded}`,
-        label: `Video ${number}`,
-        title,
-        duration: '',
-        videoId: CVT_ELITE_VIDEO_IDS[number] || '',
-        videoProvider: 'vimeo',
-        sourceHint: 'cvtEliteData.js',
-        summary: `Clase exclusiva del programa CVT Elite · Módulo ${number}.`,
-      },
-    ],
-  }
-})
 
 export const cvtEliteCourse = {
   id: CVT_ELITE_COURSE_ID,
   title: 'CVT Elite',
   eyebrow: 'Eagles Gear Solutions',
-  description: 'Programa Elite de capacitación en transmisiones CVT. Acceso exclusivo para alumnos inscritos.',
+  description: 'Programa Elite de capacitación técnica en transmisiones CVT con grabaciones en vivo y mentorías especializadas.',
   instructor: 'Eagles Gear Solutions',
   theme: 'elite',
-  modules,
+  modules: [
+    {
+      id: 'grabaciones-vivo-jf011-jf017',
+      number: '01',
+      title: 'Grabaciones en Vivo — CVT JF011 y JF017',
+      description: 'Serie de grabaciones en vivo enfocadas en el trabajo técnico, diagnóstico y análisis de las transmisiones CVT JF011 y JF017.',
+      lessons: buildLessons({
+        prefix: 'elite-jf011-jf017',
+        label: 'Grabación',
+        titlePrefix: 'JF011 y JF017',
+        videoIds: liveJf011Jf017,
+        intro: 'Contenido exclusivo de CVT Elite correspondiente a las grabaciones en vivo del módulo JF011 y JF017.',
+        summary: 'Revisa con atención el desarrollo técnico de la sesión y toma nota de los procedimientos, criterios de diagnóstico y recomendaciones explicadas durante la clase.',
+      }),
+    },
+    {
+      id: 'mentoria-elite-jf015',
+      number: '02',
+      title: 'Mentoría Elite — CVT JF015',
+      description: 'Mentoría exclusiva enfocada en el análisis técnico y resolución de dudas alrededor de la transmisión CVT JF015.',
+      lessons: buildLessons({
+        prefix: 'elite-jf015',
+        label: 'Mentoría',
+        titlePrefix: 'Mentoría Elite JF015',
+        videoIds: mentorshipJf015,
+        intro: 'Mentoría exclusiva de CVT Elite enfocada en la transmisión JF015, con explicación técnica y acompañamiento aplicado.',
+        summary: 'Utiliza esta sesión para reforzar el diagnóstico, comprender criterios de reparación y repasar los puntos técnicos revisados durante la mentoría.',
+      }),
+    },
+  ],
 }

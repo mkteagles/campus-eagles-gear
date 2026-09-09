@@ -853,3 +853,27 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
   .elite-module-card { min-height: 215px; }
   .course-dashboard__section-heading { align-items: flex-start; flex-direction: column; }
 }
+
+/* CVT Elite · introducción de cada video */
+.lesson-intro {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border: 1px solid rgba(214, 168, 67, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(214, 168, 67, 0.08), rgba(255, 255, 255, 0.02));
+}
+
+.lesson-intro span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #d6a843;
+}
+
+.lesson-intro p {
+  margin: 0;
+  line-height: 1.65;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.72));
+}

@@ -1,108 +1,48 @@
-# CVT Elite · Campus Eagles Gear
+# CVT Elite · Campus Eagles Gear Solutions
 
-Esta versión conserva el Campus existente y agrega **CVT Elite** como un curso independiente.
+## Contenido cargado al 09/09/2026
 
-## Qué ya viene listo
+El curso `cvt-elite` queda organizado en dos módulos:
 
-- Dashboard exclusivo de CVT Elite.
-- 25 módulos preparados (puedes bajar el número a 18–25 sin tocar el dashboard).
-- Un video por módulo.
-- Progreso separado por curso y por alumno.
-- Validación de acceso por `course_enrollments`.
-- Panel administrativo con selector de curso al crear alumnos.
-- Desde el panel admin puedes activar o retirar CVT Elite a un usuario existente.
-- La API CRM del Campus acepta `cvt-elite` como `courseId`.
+### Módulo 01 · Grabaciones en Vivo — CVT JF011 y JF017
+- 11 videos de Vimeo.
+- Cada video aparece como `Grabación 01`, `Grabación 02`, etc.
+- Cada lección incluye un bloque de introducción antes del reproductor y un resumen debajo del video.
 
-## 1. Primero: Supabase
+### Módulo 02 · Mentoría Elite — CVT JF015
+- 7 espacios de video de Vimeo.
+- Cada video aparece como `Mentoría 01`, `Mentoría 02`, etc.
+- El enlace recibido para la Mentoría 07 repite el ID de la Mentoría 02: `1123980579`.
+- Se conserva el enlace repetido para respetar exactamente el listado recibido. Cuando llegue el ID correcto, solo cambia el último valor en `src/data/cvtEliteData.js`.
 
-En **Supabase del Campus → SQL Editor** ejecuta únicamente:
-
-`Migracion_CVT_Elite.sql`
-
-No vuelvas a ejecutar toda `Base_Datos_Alumnos_Supabase.sql`.
-
-## 2. Dar acceso a los dos clientes Elite
-
-Después del deploy:
-
-1. Entra al Campus con el administrador.
-2. Abre `/admin`.
-3. En **Agregar usuario**, captura nombre, usuario, teléfono y contraseña temporal.
-4. En **Curso** selecciona `CVT Elite`.
-5. Crea la cuenta.
-6. Comparte usuario + contraseña temporal.
-7. El alumno cambia su contraseña en el primer ingreso.
-
-Si el usuario ya existía, en la tabla de alumnos pulsa el botón **CVT Elite** para activarle ese curso.
-
-## 3. Cuando tengas los IDs de los videos
-
-Edita:
+## Archivo principal de contenido
 
 `src/data/cvtEliteData.js`
 
-Busca:
+Ahí se encuentran:
+- IDs de Vimeo.
+- Títulos de módulos.
+- Títulos de cada video.
+- Introducciones.
+- Resúmenes.
 
-```js
-export const CVT_ELITE_VIDEO_IDS = {
-  1: '',
-  2: '',
-  3: '',
-  // ...
-}
+No es necesario modificar Supabase para cambiar títulos o videos.
+
+## Acceso de alumnos
+
+El alumno debe tener una inscripción activa en `course_enrollments` con:
+
+```text
+course_id = cvt-elite
+status = active
 ```
 
-Y pega los IDs de Vimeo:
+El progreso se guarda en `lesson_progress` usando el mismo `course_id`.
 
-```js
-export const CVT_ELITE_VIDEO_IDS = {
-  1: '123456789',
-  2: '987654321',
-  3: '456789123',
-}
-```
+## Supabase
 
-## 4. Si al final son 18, 20 o 22 módulos
+Si aún no se ha ejecutado la migración de CVT Elite, correr una sola vez:
 
-En el mismo archivo cambia:
+`Migracion_CVT_Elite.sql`
 
-```js
-export const CVT_ELITE_MODULE_COUNT = 25
-```
-
-Por ejemplo:
-
-```js
-export const CVT_ELITE_MODULE_COUNT = 20
-```
-
-No necesitas modificar rutas, dashboard ni Supabase.
-
-## 5. Cambiar nombres de módulos
-
-En `src/data/cvtEliteData.js` edita `CVT_ELITE_MODULE_TITLES`.
-
-Ejemplo:
-
-```js
-export const CVT_ELITE_MODULE_TITLES = {
-  1: 'Fundamentos CVT',
-  2: 'Diagnóstico inicial',
-  3: 'Presiones y parámetros',
-}
-```
-
-## 6. Subir a Git
-
-Desde la raíz del repositorio:
-
-```powershell
-npm install
-npm run build
-git status
-git add .
-git commit -m "Agrega CVT Elite al Campus"
-git push origin main
-```
-
-Si Vercel está conectado a GitHub, el push dispara el nuevo deploy automáticamente.
+No volver a ejecutar toda la base original si el Campus ya está funcionando.

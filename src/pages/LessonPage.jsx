@@ -86,6 +86,13 @@ export default function LessonPage() {
             {lesson.duration && <span className="lesson-duration"><Clock3 />{lesson.duration}</span>}
           </div>
 
+          {lesson.intro && (
+            <div className="lesson-intro">
+              <span>INTRODUCCIÓN</span>
+              <p>{lesson.intro}</p>
+            </div>
+          )}
+
           <VideoPlayer videoId={lesson.videoId} title={lesson.title} provider={lesson.videoProvider} sourceHint={lesson.sourceHint} />
 
           <div className="lesson-under-video">
