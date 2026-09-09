@@ -1,11 +1,14 @@
 $ErrorActionPreference = "Stop"
 
+Set-Location $PSScriptRoot
+
 Write-Host ""
-Write-Host "=== EAGLES CAMPUS · CVT ELITE + ENTREGABLES ===" -ForegroundColor Yellow
+Write-Host "=== EAGLES CAMPUS · CVT ELITE + 10 MANUALES ===" -ForegroundColor Yellow
+Write-Host "Proyecto: $PSScriptRoot" -ForegroundColor DarkGray
 Write-Host ""
 
 if (-not (Test-Path ".git")) {
-  Write-Host "ERROR: Ejecuta este script dentro de la carpeta campus-eagles-gear." -ForegroundColor Red
+  Write-Host "ERROR: Esta carpeta no contiene el repositorio .git." -ForegroundColor Red
   exit 1
 }
 
@@ -16,12 +19,11 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "2/4 Revisando build..." -ForegroundColor Cyan
 npm run build
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "El build falló. No se subieron cambios a Git." -ForegroundColor Red
+  Write-Host "El build fallo. NO se hizo commit ni push." -ForegroundColor Red
   exit $LASTEXITCODE
 }
 
 Write-Host "3/4 Preparando commit..." -ForegroundColor Cyan
-git status
 git add .
 
 git diff --cached --quiet
@@ -30,8 +32,8 @@ if ($LASTEXITCODE -eq 0) {
   exit 0
 }
 
-$commitMessage = "Agrega entregables y manuales a CVT Elite y curso nuevo"
-git commit -m $commitMessage
+git status
+git commit -m "Agrega 10 manuales y entregables a CVT Elite"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "4/4 Subiendo el commit actual a main..." -ForegroundColor Cyan
@@ -39,4 +41,4 @@ git push origin HEAD:main
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host ""
-Write-Host "LISTO. Cambios subidos a origin/main." -ForegroundColor Green
+Write-Host "LISTO. Campus actualizado en origin/main." -ForegroundColor Green

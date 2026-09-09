@@ -961,30 +961,50 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
   border-top: 1px solid #1c2531;
 }
 
-.course-material-card__footer a {
+.course-material-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+}
+
+.course-material-card__button {
   width: 100%;
   min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
+  gap: .45rem;
   border: 1px solid #725b18;
   color: #ffd05d;
   background: rgba(255,190,0,.05);
-  font-size: .66rem;
+  font-size: .62rem;
   font-weight: 800;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .035em;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
 }
 
-.course-material-card__footer a:hover {
+.course-material-card__button:hover {
   color: #080808;
   background: #e7b631;
 }
 
-.course-material-card__footer a svg {
+.course-material-card__button--download {
+  border-color: rgba(73, 191, 117, .5);
+  color: #92e4ad;
+  background: rgba(73, 191, 117, .06);
+}
+
+.course-material-card__button--download:hover {
+  color: #07110a;
+  background: #7bd39b;
+  border-color: #7bd39b;
+}
+
+.course-material-card__button svg {
   width: .9rem;
+  flex: 0 0 auto;
 }
 
 .course-material-card__footer span {
@@ -1013,4 +1033,35 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
 @media (max-width: 650px) {
   .course-materials-grid { grid-template-columns: 1fr; }
   .course-material-card { min-height: 195px; }
+  .course-material-card__actions { grid-template-columns: 1fr; }
+}
+
+/* Materiales: etiqueta de módulo / familia de transmisión */
+.course-material-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.course-material-card__meta > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 170, 70, 0.28);
+  background: rgba(210, 170, 70, 0.09);
+  color: #d8b765;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+[data-theme='light'] .course-material-card__meta > span {
+  color: #7a5b13;
+  border-color: rgba(122, 91, 19, 0.22);
+  background: rgba(210, 170, 70, 0.12);
 }

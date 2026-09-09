@@ -46,3 +46,8 @@ Si aún no se ha ejecutado la migración de CVT Elite, correr una sola vez:
 `Migracion_CVT_Elite.sql`
 
 No volver a ejecutar toda la base original si el Campus ya está funcionando.
+
+## Descarga de materiales
+
+Los materiales disponibles muestran dos acciones: **Ver PDF** abre el documento en una pestaña nueva y **Descargar PDF** descarga el archivo directamente desde el Campus.
+

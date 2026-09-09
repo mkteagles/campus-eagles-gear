@@ -1,51 +1,43 @@
-# Materiales y entregables · Campus Eagles Gear
+# Materiales y entregables del Campus
 
-Esta versión del Campus ya incluye una sección **Entregables y manuales** dentro de los dashboards de:
+## CVT Elite
 
-- CVT Elite (`cvt-elite`)
-- Transmisiones Automáticas desde Cero (`seminario-empresarial`)
+El dashboard de CVT Elite ya incluye 10 archivos PDF reales dentro del proyecto, organizados por familia técnica:
 
-## Mientras no estén los archivos
+### JF011 / JF011E
+1. Guía técnica: diagnóstico de códigos de falla CVT
+2. Informe técnico P0777 · Jeep Compass
+3. Boletín técnico #1551 · Cuerpo de válvulas
+4. Manual CVT JF010 / JF011E
+5. Manual técnico CVT JF011E
+6. JF011E · Guía fotográfica y esquemas
 
-Los materiales aparecen como **Archivo pendiente de cargar**. Esto es intencional: permite subir el cambio hoy y agregar los PDFs después sin rediseñar el Campus.
+### JF016E / JF017E
+7. Áreas críticas de desgaste y pruebas de vacío
+8. Material de apoyo JF017
+9. Manual de servicio JF017E / RE0F10D
+10. Manual de referencia gráfica JF017
 
-## Opción A · Google Drive
+Los archivos están dentro de:
 
-1. Sube el PDF/manual a Drive.
-2. Configura el acceso del archivo según la política que vayas a usar.
-3. Copia su enlace.
-4. Abre `src/data/courseMaterials.js`.
-5. Pega el enlace en `url` del material correspondiente.
-
-Ejemplo:
-
-```js
-{
-  id: 'cvt-elite-manual-jf017',
-  title: 'Manual JF017',
-  description: 'Manual de apoyo.',
-  type: 'PDF / Manual',
-  url: 'https://drive.google.com/...',
-}
+```text
+public/materiales/cvt-elite/jf011/
+public/materiales/cvt-elite/jf017/
 ```
 
-## Opción B · Archivo dentro del proyecto
+Las tarjetas y URLs se administran desde:
 
-Guarda los PDFs en:
-
-- `public/materiales/cvt-elite/`
-- `public/materiales/seminario-empresarial/`
-
-Luego usa una ruta como:
-
-```js
-url: '/materiales/cvt-elite/manual-jf017.pdf'
+```text
+src/data/courseMaterials.js
 ```
 
-## Cuando tengas los PDFs
+> Nota: uno de los documentos recibidos como `MANUAL.pdf` tiene el mismo contenido binario que el archivo recibido como `jf011e-rukovodstvo-photo-schemi.pdf`. Se conservaron ambos porque llegaron en carpetas/paquetes diferentes y el usuario indicó que el total esperado era de 10 entregables.
 
-Puedes pasar los archivos y se puede generar otro ZIP con todos los documentos colocados, nombres ordenados y enlaces ya configurados.
+## Transmisiones Automáticas desde Cero
 
-## Nota de acceso
+Este curso ya muestra la sección **Entregables y manuales** en su dashboard. Sus tres espacios continúan como pendientes hasta recibir los PDFs correspondientes. Cuando lleguen, basta con copiar los archivos a `public/materiales/...` y completar sus URLs en `src/data/courseMaterials.js`.
 
-Los materiales se muestran dentro del dashboard de un curso al que el alumno ya debe tener acceso. Si usas enlaces públicos de Google Drive o archivos dentro de `public/`, la URL directa puede compartirse fuera del Campus. Si más adelante necesitas impedirlo, conviene migrar los entregables a un bucket privado de Supabase Storage y generar URLs firmadas para cada alumno autenticado.
+## Descarga de materiales
+
+Los materiales disponibles muestran dos acciones: **Ver PDF** abre el documento en una pestaña nueva y **Descargar PDF** descarga el archivo directamente desde el Campus.
+

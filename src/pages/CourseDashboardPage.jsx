@@ -1,4 +1,4 @@
-import { BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, FileText, FolderOpen, LogOut, PlayCircle, Sparkles } from 'lucide-react'
+import { BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, Eye, FileText, FolderOpen, LogOut, PlayCircle, Sparkles } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import LoadingScreen from '../components/LoadingScreen'
@@ -108,15 +108,33 @@ export default function CourseDashboardPage() {
                   {available ? <FileText /> : <FolderOpen />}
                 </div>
                 <div className="course-material-card__content">
-                  <small>{material.type}</small>
+                  <div className="course-material-card__meta">
+                    <small>{material.type}</small>
+                    {material.group && <span>{material.group}</span>}
+                  </div>
                   <h3>{material.title}</h3>
                   <p>{material.description}</p>
                 </div>
                 <div className="course-material-card__footer">
                   {available ? (
-                    <a href={material.url} target="_blank" rel="noreferrer">
-                      <Download /> Abrir material <ExternalLink />
-                    </a>
+                    <div className="course-material-card__actions">
+                      <a
+                        className="course-material-card__button course-material-card__button--view"
+                        href={material.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Eye /> Ver PDF <ExternalLink />
+                      </a>
+
+                      <a
+                        className="course-material-card__button course-material-card__button--download"
+                        href={material.url}
+                        download
+                      >
+                        <Download /> Descargar PDF
+                      </a>
+                    </div>
                   ) : (
                     <span>Archivo pendiente de cargar</span>
                   )}
