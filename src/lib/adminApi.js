@@ -27,4 +27,5 @@ export const adminApi = {
   createUser: (values) => request('/api/admin/users', { method: 'POST', body: JSON.stringify(values) }),
   updateUser: (values) => request('/api/admin/users', { method: 'PATCH', body: JSON.stringify(values) }),
   resetPassword: (values) => request('/api/admin/users', { method: 'PATCH', body: JSON.stringify({ ...values, action: 'reset_password' }) }),
+  setCourseAccess: (values) => request('/api/admin/users', { method: 'PATCH', body: JSON.stringify({ ...values, action: 'set_course_access' }) }),
 }

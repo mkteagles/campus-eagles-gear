@@ -1,11 +1,10 @@
 import { Check, ChevronDown, KeyRound, LayoutDashboard, LockKeyhole, LogOut, UserRound, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { course } from '../data/courseData'
 import { useAuth } from '../context/auth-context'
 import BrandMark from './BrandMark'
 
-export default function CourseSidebar({ completed, percent, collapsed, open, onClose }) {
+export default function CourseSidebar({ course, completed, percent, collapsed, open, onClose }) {
   const [expanded, setExpanded] = useState(() => new Set(course.modules.map((module) => module.id)))
   const { user, isAdmin, signOut } = useAuth()
 
@@ -32,6 +31,7 @@ export default function CourseSidebar({ completed, percent, collapsed, open, onC
             <div><span>Progreso</span><strong>{percent}%</strong></div>
             <div className="progress-track"><span style={{ width: `${percent}%` }} /></div>
           </div>
+          <NavLink className="sidebar-dashboard-link" to={`/curso/${course.id}`} onClick={onClose}><LayoutDashboard /> Dashboard</NavLink>
         </div>
 
         <nav className="curriculum" aria-label="Temario del curso">
@@ -74,6 +74,7 @@ export default function CourseSidebar({ completed, percent, collapsed, open, onC
             <ChevronDown className="account-menu__chevron" />
           </summary>
           <div className="account-menu__panel">
+            <NavLink to="/inicio" onClick={onClose}><LayoutDashboard /> Mis cursos</NavLink>
             <NavLink to="/cambiar-contrasena" onClick={onClose}><KeyRound /> Cambiar contraseña</NavLink>
             {isAdmin && <NavLink to="/admin" onClick={onClose}><LayoutDashboard /> Panel administrativo</NavLink>}
             <button onClick={signOut}><LogOut /> Cerrar sesión</button>

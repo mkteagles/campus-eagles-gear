@@ -1,8 +1,16 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/auth-context'
-import { course, getFirstLessonId } from '../data/courseData'
 
 export default function HomeRedirect() {
-  const { isAdmin } = useAuth()
-  return <Navigate to={isAdmin ? '/admin' : `/curso/${course.id}/leccion/${getFirstLessonId()}`} replace />
+  const { isAdmin, accessibleCourseIds } = useAuth()
+
+  if (isAdmin) return <Navigate to="/admin" replace />
+
+  const preferredCourseId = accessibleCourseIds.includes('cvt-elite')
+    ? 'cvt-elite'
+    : accessibleCourseIds[0]
+
+  if (!preferredCourseId) return <Navigate to="/acceso-pendiente" replace />
+
+  return <Navigate to={`/curso/${preferredCourseId}`} replace />
 }

@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 
 const allowedRoles = new Set(['admin', 'student'])
 const allowedStatuses = new Set(['active', 'inactive', 'blocked'])
-const defaultCourseId = 'seminario-empresarial'
+const allowedCourseIds = new Set(['seminario-empresarial', 'cvt-elite'])
+const defaultCourseId = 'cvt-elite'
 
 function normalizeEaglesEmail(value) {
   const input = String(value || '').trim().toLowerCase()
@@ -58,22 +59,41 @@ export default async function handler(req, res) {
   if (admin.error) return send(res, admin.status, { error: admin.error })
 
   if (req.method === 'GET') {
-    const { data, error } = await client
-      .from('student_profiles')
-      .select('id,email,full_name,phone,company_name,city,state,country,role,status,must_change_password,created_at')
-      .order('created_at', { ascending: false })
+    const [{ data: users, error }, { data: enrollments, error: enrollmentError }] = await Promise.all([
+      client
+        .from('student_profiles')
+        .select('id,email,full_name,phone,company_name,city,state,country,role,status,must_change_password,created_at')
+        .order('created_at', { ascending: false }),
+      client
+        .from('course_enrollments')
+        .select('user_id,course_id,status,expires_at')
+        .in('status', ['active', 'completed']),
+    ])
 
-    if (error) return send(res, 500, { error: 'No fue posible cargar los usuarios.' })
-    return send(res, 200, { users: data })
+    if (error || enrollmentError) return send(res, 500, { error: 'No fue posible cargar los usuarios.' })
+
+    const courseMap = new Map()
+    for (const enrollment of enrollments || []) {
+      const active = !enrollment.expires_at || new Date(enrollment.expires_at) > new Date()
+      if (!active) continue
+      const current = courseMap.get(enrollment.user_id) || []
+      current.push(enrollment.course_id)
+      courseMap.set(enrollment.user_id, current)
+    }
+
+    return send(res, 200, {
+      users: (users || []).map((user) => ({ ...user, course_ids: courseMap.get(user.id) || [] })),
+    })
   }
 
   if (req.method === 'POST') {
-    const { email, password, fullName, phone, companyName, role = 'student' } = req.body || {}
+    const { email, password, fullName, phone, companyName, role = 'student', courseId = defaultCourseId } = req.body || {}
     const cleanEmail = normalizeEaglesEmail(email)
 
     if (!/^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?@eagles\.com$/.test(cleanEmail)) return send(res, 400, { error: 'El usuario solo puede usar letras, números, punto, guion o guion bajo.' })
     if (String(password || '').length < 8) return send(res, 400, { error: 'La contraseña debe tener al menos 8 caracteres.' })
     if (!allowedRoles.has(role)) return send(res, 400, { error: 'El rol seleccionado no es válido.' })
+    if (role === 'student' && !allowedCourseIds.has(courseId)) return send(res, 400, { error: 'El curso seleccionado no es válido.' })
 
     const { data: created, error: createError } = await client.auth.admin.createUser({
       email: cleanEmail,
@@ -103,12 +123,13 @@ export default async function handler(req, res) {
       return send(res, 500, { error: 'La cuenta no pudo terminar de configurarse.' })
     }
 
+    let courseIds = []
     if (role === 'student') {
       const { error: enrollmentError } = await client
         .from('course_enrollments')
         .upsert({
           user_id: created.user.id,
-          course_id: defaultCourseId,
+          course_id: courseId,
           status: 'active',
           expires_at: null,
         }, { onConflict: 'user_id,course_id' })
@@ -117,12 +138,13 @@ export default async function handler(req, res) {
         await client.auth.admin.deleteUser(created.user.id)
         return send(res, 500, { error: 'La cuenta se creó, pero no pudo inscribirse al curso.' })
       }
+      courseIds = [courseId]
     }
 
-    return send(res, 201, { user: profile })
+    return send(res, 201, { user: { ...profile, course_ids: courseIds } })
   }
 
-  const { userId, role, status, action, password } = req.body || {}
+  const { userId, role, status, action, password, courseId, enabled } = req.body || {}
   if (!userId) return send(res, 400, { error: 'Falta seleccionar un usuario.' })
 
   if (action === 'reset_password') {
@@ -139,6 +161,28 @@ export default async function handler(req, res) {
 
     if (error) return send(res, 500, { error: 'La contraseña cambió, pero no se pudo activar el paso obligatorio.' })
     return send(res, 200, { user: data })
+  }
+
+  if (action === 'set_course_access') {
+    if (!allowedCourseIds.has(courseId)) return send(res, 400, { error: 'El curso seleccionado no es válido.' })
+
+    if (enabled === false) {
+      const { error } = await client
+        .from('course_enrollments')
+        .update({ status: 'cancelled' })
+        .eq('user_id', userId)
+        .eq('course_id', courseId)
+
+      if (error) return send(res, 500, { error: 'No fue posible retirar el acceso al curso.' })
+      return send(res, 200, { courseId, enabled: false })
+    }
+
+    const { error } = await client
+      .from('course_enrollments')
+      .upsert({ user_id: userId, course_id: courseId, status: 'active', expires_at: null }, { onConflict: 'user_id,course_id' })
+
+    if (error) return send(res, 500, { error: 'No fue posible activar el acceso al curso.' })
+    return send(res, 200, { courseId, enabled: true })
   }
 
   if (role && !allowedRoles.has(role)) return send(res, 400, { error: 'El rol no es válido.' })

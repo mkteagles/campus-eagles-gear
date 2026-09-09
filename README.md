@@ -77,3 +77,7 @@ npm run build
 Usa `npx vercel dev` para probar también el panel administrativo y sus funciones `/api`. `npm run dev` sirve para la interfaz, pero no ejecuta esas funciones de Vercel.
 
 Sube el proyecto a GitHub e impórtalo desde Vercel. El archivo `vercel.json` ya permite abrir directamente cualquier URL de lección sin obtener error 404.
+
+## CVT Elite (actualización septiembre 2026)
+
+El Campus ahora soporta múltiples cursos por alumno. La capacitación `cvt-elite` tiene dashboard propio, progreso independiente y 25 módulos de video preparados. Para activar la base de datos ejecuta `Migracion_CVT_Elite.sql` en el Supabase del Campus. Los IDs de video se administran en `src/data/cvtEliteData.js`. Consulta `GUIA_CVT_ELITE.md` para el flujo completo.

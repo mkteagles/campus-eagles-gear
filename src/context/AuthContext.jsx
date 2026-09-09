@@ -2,42 +2,45 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { AuthContext } from './auth-context'
 
-const courseId = 'seminario-empresarial'
+function enrollmentIsActive(enrollment) {
+  if (!enrollment) return false
+  if (!['active', 'completed'].includes(enrollment.status)) return false
+  return !enrollment.expires_at || new Date(enrollment.expires_at) > new Date()
+}
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
-  const [hasCourseAccess, setHasCourseAccess] = useState(false)
+  const [enrollments, setEnrollments] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const loadCourseAccess = useCallback(async (nextProfile, userId) => {
-    if (!nextProfile || !userId) {
-      setHasCourseAccess(false)
-      return false
+  const loadEnrollments = useCallback(async (nextProfile, userId) => {
+    if (!nextProfile || !userId || !supabase) {
+      setEnrollments([])
+      return []
     }
 
-    if (nextProfile.role === 'admin' && nextProfile.status === 'active') {
-      setHasCourseAccess(true)
-      return true
-    }
-
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('course_enrollments')
-      .select('status,expires_at')
+      .select('course_id,status,expires_at,enrolled_at')
       .eq('user_id', userId)
-      .eq('course_id', courseId)
       .in('status', ['active', 'completed'])
-      .maybeSingle()
 
-    const active = Boolean(data && (!data.expires_at || new Date(data.expires_at) > new Date()))
-    setHasCourseAccess(active)
-    return active
+    if (error) {
+      console.error('Error cargando inscripciones:', error)
+      setEnrollments([])
+      return []
+    }
+
+    const activeEnrollments = (data || []).filter(enrollmentIsActive)
+    setEnrollments(activeEnrollments)
+    return activeEnrollments
   }, [])
 
   const refreshProfile = useCallback(async (nextSession = session) => {
     if (!nextSession?.user || !isSupabaseConfigured) {
       setProfile(null)
-      setHasCourseAccess(false)
+      setEnrollments([])
       return null
     }
 
@@ -48,9 +51,9 @@ export function AuthProvider({ children }) {
       .single()
 
     setProfile(data || null)
-    await loadCourseAccess(data || null, nextSession.user.id)
+    await loadEnrollments(data || null, nextSession.user.id)
     return data || null
-  }, [loadCourseAccess, session])
+  }, [loadEnrollments, session])
 
   useEffect(() => {
     let active = true
@@ -58,7 +61,7 @@ export function AuthProvider({ children }) {
     async function loadProfile(nextSession) {
       if (!nextSession?.user) {
         if (active) setProfile(null)
-        if (active) setHasCourseAccess(false)
+        if (active) setEnrollments([])
         if (active) setLoading(false)
         return
       }
@@ -69,8 +72,10 @@ export function AuthProvider({ children }) {
         .eq('id', nextSession.user.id)
         .single()
 
-      if (active) setProfile(data || null)
-      if (active) await loadCourseAccess(data || null, nextSession.user.id)
+      if (!active) return
+
+      setProfile(data || null)
+      await loadEnrollments(data || null, nextSession.user.id)
       if (active) setLoading(false)
     }
 
@@ -94,20 +99,37 @@ export function AuthProvider({ children }) {
       active = false
       listener.subscription.unsubscribe()
     }
-  }, [loadCourseAccess])
+  }, [loadEnrollments])
+
+  const isAdmin = profile?.role === 'admin' && profile?.status === 'active'
+
+  const accessibleCourseIds = useMemo(
+    () => enrollments.map((item) => item.course_id),
+    [enrollments],
+  )
+
+  const hasAccessToCourse = useCallback((courseId) => {
+    if (!courseId) return false
+    if (isAdmin) return true
+    return accessibleCourseIds.includes(courseId)
+  }, [accessibleCourseIds, isAdmin])
 
   const value = useMemo(() => ({
     session,
     user: session?.user ?? null,
     profile,
-    hasCourseAccess,
-    isAdmin: profile?.role === 'admin' && profile?.status === 'active',
+    enrollments,
+    accessibleCourseIds,
+    hasAccessToCourse,
+    // Compatibilidad con componentes antiguos: acceso al curso original.
+    hasCourseAccess: hasAccessToCourse('seminario-empresarial'),
+    isAdmin,
     loading,
     configured: isSupabaseConfigured,
     signIn: (email, password) => supabase.auth.signInWithPassword({ email, password }),
     signOut: () => supabase?.auth.signOut(),
     refreshProfile,
-  }), [session, profile, hasCourseAccess, loading, refreshProfile])
+  }), [session, profile, enrollments, accessibleCourseIds, hasAccessToCourse, isAdmin, loading, refreshProfile])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

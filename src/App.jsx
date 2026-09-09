@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import HomeRedirect from './components/HomeRedirect'
-import { course, getFirstLessonId } from './data/courseData'
 import ConfigPage from './pages/ConfigPage'
 import LessonPage from './pages/LessonPage'
 import LoginPage from './pages/LoginPage'
@@ -10,10 +9,10 @@ import ChangePasswordPage from './pages/ChangePasswordPage'
 import AdminPage from './pages/AdminPage'
 import AccessStatusPage from './pages/AccessStatusPage'
 import CourseCompletePage from './pages/CourseCompletePage'
+import CourseDashboardPage from './pages/CourseDashboardPage'
 import ThemeToggle from './components/ThemeToggle'
 
 export default function App() {
-  const firstLesson = `/curso/${course.id}/leccion/${getFirstLessonId()}`
   return (
     <>
       <ThemeToggle />
@@ -25,9 +24,10 @@ export default function App() {
         <Route path="/acceso-bloqueado" element={<AccessStatusPage />} />
         <Route path="/inicio" element={<ProtectedRoute><HomeRedirect /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><AdminRoute><AdminPage /></AdminRoute></ProtectedRoute>} />
+        <Route path="/curso/:courseId" element={<ProtectedRoute><CourseDashboardPage /></ProtectedRoute>} />
         <Route path="/curso/:courseId/leccion/:lessonId" element={<ProtectedRoute><LessonPage /></ProtectedRoute>} />
         <Route path="/curso/:courseId/completado" element={<ProtectedRoute><CourseCompletePage /></ProtectedRoute>} />
-        <Route path="*" element={<Navigate to={firstLesson} replace />} />
+        <Route path="*" element={<Navigate to="/inicio" replace />} />
       </Routes>
     </>
   )

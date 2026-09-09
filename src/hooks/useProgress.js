@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { course, lessons } from '../data/courseData'
+import { getCourseLessons } from '../data/courses'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/auth-context'
 
-const localKey = 'eagles-course-progress'
-
-export function useProgress() {
+export function useProgress(courseId) {
   const { user, configured } = useAuth()
+  const lessons = useMemo(() => getCourseLessons(courseId), [courseId])
+  const localKey = `eagles-course-progress:${courseId || 'unknown'}`
+
   const [completed, setCompleted] = useState(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -18,6 +19,12 @@ export function useProgress() {
       setLoading(true)
       setError('')
 
+      if (!courseId) {
+        if (active) setCompleted(new Set())
+        if (active) setLoading(false)
+        return
+      }
+
       if (!configured || !user) {
         const saved = JSON.parse(localStorage.getItem(localKey) || '[]')
         if (active) setCompleted(new Set(saved))
@@ -28,24 +35,27 @@ export function useProgress() {
       const { data, error: fetchError } = await supabase
         .from('lesson_progress')
         .select('lesson_id')
-        .eq('course_id', course.id)
+        .eq('user_id', user.id)
+        .eq('course_id', courseId)
         .eq('completed', true)
 
       if (!active) return
       if (fetchError) setError('No pudimos cargar tu progreso. Intenta de nuevo.')
-      else setCompleted(new Set(data.map((row) => row.lesson_id)))
+      else setCompleted(new Set((data || []).map((row) => row.lesson_id)))
       setLoading(false)
     }
 
     loadProgress()
     return () => { active = false }
-  }, [configured, user])
+  }, [configured, courseId, localKey, user])
 
   const toggleLesson = useCallback(async (lessonId) => {
     const wasCompleted = completed.has(lessonId)
     const next = new Set(completed)
+
     if (wasCompleted) next.delete(lessonId)
     else next.add(lessonId)
+
     setCompleted(next)
     setError('')
 
@@ -56,7 +66,7 @@ export function useProgress() {
 
     const { error: saveError } = await supabase.from('lesson_progress').upsert({
       user_id: user.id,
-      course_id: course.id,
+      course_id: courseId,
       lesson_id: lessonId,
       completed: !wasCompleted,
       completed_at: !wasCompleted ? new Date().toISOString() : null,
@@ -68,10 +78,14 @@ export function useProgress() {
       setError('No se guardó el cambio. Revisa tu conexión e intenta otra vez.')
       return { success: false }
     }
+
     return { success: true }
-  }, [completed, configured, user])
+  }, [completed, configured, courseId, localKey, user])
 
-  const percent = useMemo(() => Math.round((completed.size / lessons.length) * 100), [completed])
+  const percent = useMemo(() => {
+    if (!lessons.length) return 0
+    return Math.round((completed.size / lessons.length) * 100)
+  }, [completed, lessons.length])
 
-  return { completed, percent, loading, error, toggleLesson }
+  return { completed, percent, loading, error, toggleLesson, lessons }
 }

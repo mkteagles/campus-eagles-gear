@@ -2,7 +2,7 @@ import { BookOpen, CheckCircle2, Copy, KeyRound, LoaderCircle, LogOut, Plus, Sea
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
-import { course, getFirstLessonId } from '../data/courseData'
+import { courses } from '../data/courses'
 import { useAuth } from '../context/auth-context'
 import { adminApi } from '../lib/adminApi'
 
@@ -13,12 +13,17 @@ const emptyForm = {
   companyName: '',
   password: '',
   role: 'student',
+  courseId: 'cvt-elite',
 }
 
 function createPassword() {
   const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$'
   const values = crypto.getRandomValues(new Uint32Array(12))
   return Array.from(values, (value) => characters[value % characters.length]).join('')
+}
+
+function courseName(courseId) {
+  return courses.find((course) => course.id === courseId)?.title || courseId
 }
 
 export default function AdminPage() {
@@ -47,7 +52,7 @@ export default function AdminPage() {
     const safeUsers = Array.isArray(users) ? users : []
     const term = query.trim().toLowerCase()
     if (!term) return safeUsers
-    return safeUsers.filter((user) => [user.full_name, user.email, user.company_name, user.phone]
+    return safeUsers.filter((user) => [user.full_name, user.email, user.company_name, user.phone, ...(user.course_ids || [])]
       .some((value) => String(value || '').toLowerCase().includes(term)))
   }, [query, users])
 
@@ -77,7 +82,7 @@ export default function AdminPage() {
       const { user } = await adminApi.createUser(form)
       setUsers((current) => [user, ...current])
       setMessage({ type: 'success', text: `La cuenta de ${user.full_name || user.email} fue creada correctamente.` })
-      setCredentials({ title: 'Cuenta creada', email: user.email, password: temporaryPassword })
+      setCredentials({ title: `Cuenta creada · ${form.role === 'student' ? courseName(form.courseId) : 'Administrador'}`, email: user.email, password: temporaryPassword })
       setForm(emptyForm)
     } catch (error) {
       setMessage({ type: 'error', text: error.message })
@@ -120,12 +125,34 @@ export default function AdminPage() {
     }
   }
 
+  async function toggleCourseAccess(user, courseId) {
+    const hasAccess = (user.course_ids || []).includes(courseId)
+    setUpdatingId(user.id)
+    setMessage({ type: '', text: '' })
+
+    try {
+      await adminApi.setCourseAccess({ userId: user.id, courseId, enabled: !hasAccess })
+      setUsers((current) => current.map((item) => {
+        if (item.id !== user.id) return item
+        const currentIds = new Set(item.course_ids || [])
+        if (hasAccess) currentIds.delete(courseId)
+        else currentIds.add(courseId)
+        return { ...item, course_ids: [...currentIds] }
+      }))
+      setMessage({ type: 'success', text: `${hasAccess ? 'Se retiró' : 'Se activó'} el acceso a ${courseName(courseId)}.` })
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message })
+    } finally {
+      setUpdatingId('')
+    }
+  }
+
   return (
     <main className="admin-page">
       <header className="admin-header">
         <BrandMark />
         <nav>
-          <Link to={`/curso/${course.id}/leccion/${getFirstLessonId()}`}><BookOpen /> Ver curso</Link>
+          <Link to="/inicio"><BookOpen /> Ver cursos</Link>
           <span>{profile?.full_name || profile?.email}</span>
           <button onClick={signOut} aria-label="Cerrar sesión"><LogOut /></button>
         </nav>
@@ -133,7 +160,7 @@ export default function AdminPage() {
 
       <div className="admin-content">
         <div className="admin-title-row">
-          <div><span className="eyebrow">CONTROL DE ACCESOS</span><h1>Usuarios del campus</h1><p>Crea cuentas y administra quién puede entrar a la capacitación.</p></div>
+          <div><span className="eyebrow">CONTROL DE ACCESOS</span><h1>Usuarios del campus</h1><p>Crea cuentas y asigna exactamente qué capacitación puede ver cada alumno.</p></div>
           <span className="admin-role-badge"><ShieldCheck /> Administrador</span>
         </div>
 
@@ -162,16 +189,26 @@ export default function AdminPage() {
 
             <div className="admin-table-wrap">
               <table className="admin-table">
-                <thead><tr><th>Usuario</th><th>Empresa</th><th>Rol</th><th>Acceso</th><th>Contraseña</th></tr></thead>
+                <thead><tr><th>Usuario</th><th>Empresa</th><th>Cursos</th><th>Rol</th><th>Acceso</th><th>Contraseña</th></tr></thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan="5" className="admin-empty"><LoaderCircle className="spin" /> Cargando usuarios...</td></tr>
+                    <tr><td colSpan="6" className="admin-empty"><LoaderCircle className="spin" /> Cargando usuarios...</td></tr>
                   ) : filteredUsers.length === 0 ? (
-                    <tr><td colSpan="5" className="admin-empty"><UserRound /> No se encontraron usuarios.</td></tr>
+                    <tr><td colSpan="6" className="admin-empty"><UserRound /> No se encontraron usuarios.</td></tr>
                   ) : filteredUsers.map((user) => (
                     <tr key={user.id} className={updatingId === user.id ? 'is-updating' : ''}>
                       <td><span className="table-user"><span>{(user.full_name || user.email || '?').slice(0, 1).toUpperCase()}</span><span><strong>{user.full_name || 'Sin nombre'}</strong><small>{user.email}</small></span></span></td>
                       <td><strong className="table-company">{user.company_name || '—'}</strong><small className="table-phone">{user.phone || ''}</small></td>
+                      <td>
+                        {user.role === 'admin' ? <span className="course-access-admin">Todos</span> : (
+                          <div className="course-access-list">
+                            {courses.map((course) => {
+                              const enabled = (user.course_ids || []).includes(course.id)
+                              return <button type="button" key={course.id} disabled={updatingId === user.id} className={enabled ? 'is-enabled' : ''} onClick={() => toggleCourseAccess(user, course.id)}>{course.title}</button>
+                            })}
+                          </div>
+                        )}
+                      </td>
                       <td><select value={user.role} disabled={updatingId === user.id} onChange={(event) => handleUpdate(user.id, 'role', event.target.value)}><option value="student">Alumno</option><option value="admin">Administrador</option></select></td>
                       <td><select className={`status-select status-${user.status}`} value={user.status} disabled={updatingId === user.id} onChange={(event) => handleUpdate(user.id, 'status', event.target.value)}><option value="active">Activo</option><option value="inactive">Inactivo</option><option value="blocked">Bloqueado</option></select></td>
                       <td><button className="reset-password-button" type="button" disabled={updatingId === user.id} onClick={() => handleResetPassword(user)}><KeyRound /> Restablecer</button><small className="password-status">{user.must_change_password ? 'Cambio pendiente' : 'Contraseña privada'}</small></td>
@@ -183,15 +220,16 @@ export default function AdminPage() {
           </section>
 
           <aside className="create-user-card">
-            <div className="admin-card-heading"><div><span className="create-icon"><Plus /></span><h2>Agregar usuario</h2><small>Se inscribirá automáticamente al curso.</small></div></div>
+            <div className="admin-card-heading"><div><span className="create-icon"><Plus /></span><h2>Agregar usuario</h2><small>Selecciona el curso que compró.</small></div></div>
             <form onSubmit={handleCreate}>
               <label>Nombre completo<input value={form.fullName} onChange={(event) => setField('fullName', event.target.value)} placeholder="Nombre del alumno" required /></label>
               <label>Usuario asignado<div className="admin-username"><input value={form.email} onChange={(event) => setField('email', event.target.value.replace(/@eagles\.com$/i, ''))} placeholder="nombre.apellido" autoComplete="off" required /><span>@eagles.com</span></div></label>
               <div className="admin-form-row"><label>Teléfono<input value={form.phone} onChange={(event) => setField('phone', event.target.value)} placeholder="449 000 0000" /></label><label>Rol<select value={form.role} onChange={(event) => setField('role', event.target.value)}><option value="student">Alumno</option><option value="admin">Administrador</option></select></label></div>
+              {form.role === 'student' && <label>Curso<select value={form.courseId} onChange={(event) => setField('courseId', event.target.value)}>{courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}</select></label>}
               <label>Empresa o taller<input value={form.companyName} onChange={(event) => setField('companyName', event.target.value)} placeholder="Nombre del taller" /></label>
               <label>Contraseña temporal<div className="admin-password"><KeyRound /><input value={form.password} onChange={(event) => setField('password', event.target.value)} placeholder="Mínimo 8 caracteres" minLength="8" required /><button type="button" onClick={generatePassword}>Generar</button><button type="button" onClick={() => navigator.clipboard?.writeText(form.password)} aria-label="Copiar contraseña"><Copy /></button></div></label>
               <button className="primary-button primary-button--wide" disabled={saving}>{saving ? <LoaderCircle className="spin" /> : <><Plus /> Crear usuario</>}</button>
-              <p className="form-security-note"><ShieldCheck /> Comparte estos datos directamente. El alumno deberá cambiar la contraseña en su primer ingreso.</p>
+              <p className="form-security-note"><ShieldCheck /> Para los dos clientes Elite: selecciona <strong>CVT Elite</strong>, crea el usuario y comparte las credenciales.</p>
             </form>
           </aside>
         </div>

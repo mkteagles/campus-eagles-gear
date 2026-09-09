@@ -3,7 +3,7 @@ import { useAuth } from '../context/auth-context'
 import LoadingScreen from './LoadingScreen'
 
 export default function ProtectedRoute({ children }) {
-  const { user, profile, hasCourseAccess, loading, configured } = useAuth()
+  const { user, profile, hasAccessToCourse, loading, configured } = useAuth()
   const location = useLocation()
 
   if (loading) return <LoadingScreen />
@@ -11,11 +11,17 @@ export default function ProtectedRoute({ children }) {
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />
   if (!profile) return <Navigate to="/acceso-pendiente" replace />
   if (profile.status !== 'active') return <Navigate to="/acceso-bloqueado" replace />
+
   if (profile.must_change_password && location.pathname !== '/cambiar-contrasena') {
     return <Navigate to="/cambiar-contrasena" replace />
   }
-  if (!hasCourseAccess && location.pathname.startsWith('/curso/')) {
+
+  const courseMatch = location.pathname.match(/^\/curso\/([^/]+)/)
+  const requestedCourseId = courseMatch?.[1]
+
+  if (requestedCourseId && !hasAccessToCourse(requestedCourseId)) {
     return <Navigate to="/acceso-pendiente" replace />
   }
+
   return children
 }

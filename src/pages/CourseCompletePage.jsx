@@ -1,21 +1,29 @@
 import { ArrowLeft, CheckCircle2, Sparkles, Trophy, UsersRound } from 'lucide-react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import LoadingScreen from '../components/LoadingScreen'
 import { useAuth } from '../context/auth-context'
-import { course, getFirstLessonId, lessons } from '../data/courseData'
+import { getCourse, getCourseLessons, getFirstLessonIdForCourse } from '../data/courses'
 import { useProgress } from '../hooks/useProgress'
 
 export default function CourseCompletePage() {
+  const { courseId } = useParams()
   const navigate = useNavigate()
   const { profile } = useAuth()
-  const { completed, loading } = useProgress()
-  const finished = lessons.every((lesson) => completed.has(lesson.id))
+  const course = getCourse(courseId)
+  const lessons = getCourseLessons(courseId)
+  const { completed, loading } = useProgress(courseId)
 
+  if (!course) return <Navigate to="/inicio" replace />
   if (loading) return <LoadingScreen />
+
+  const finished = lessons.length > 0 && lessons.every((lesson) => completed.has(lesson.id))
+
   if (!finished) {
     const pendingLesson = lessons.find((lesson) => !completed.has(lesson.id)) || lessons.at(-1)
-    return <Navigate to={`/curso/${course.id}/leccion/${pendingLesson.id}`} replace />
+    return pendingLesson
+      ? <Navigate to={`/curso/${course.id}/leccion/${pendingLesson.id}`} replace />
+      : <Navigate to={`/curso/${course.id}`} replace />
   }
 
   return (
@@ -32,7 +40,7 @@ export default function CourseCompletePage() {
         <h1>¡Terminaste<br />el curso!</h1>
         <p className="course-complete-greeting">
           {profile?.full_name ? `${profile.full_name}, has completado` : 'Has completado'} <strong>{course.title}</strong>.
-          Gracias por confiar en Eagles Digital Solutions para seguir fortaleciendo tus conocimientos.
+          Gracias por confiar en Eagles Gear Solutions para seguir fortaleciendo tus conocimientos.
         </p>
 
         <div className="course-complete-next">
@@ -46,7 +54,7 @@ export default function CourseCompletePage() {
         <button
           type="button"
           className="course-complete-back"
-          onClick={() => navigate(`/curso/${course.id}/leccion/${getFirstLessonId()}`)}
+          onClick={() => navigate(`/curso/${course.id}/leccion/${getFirstLessonIdForCourse(course.id)}`)}
         >
           <ArrowLeft /> Volver a revisar las clases
         </button>

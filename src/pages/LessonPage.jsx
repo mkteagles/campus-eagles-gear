@@ -4,14 +4,15 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import CourseSidebar from '../components/CourseSidebar'
 import ProgressRing from '../components/ProgressRing'
 import VideoPlayer from '../components/VideoPlayer'
-import { course, getLesson, getLessonNeighbors } from '../data/courseData'
+import { getCourse, getCourseLesson, getFirstLessonIdForCourse, getLessonNeighborsForCourse } from '../data/courses'
 import { useProgress } from '../hooks/useProgress'
 
 export default function LessonPage() {
-  const { lessonId } = useParams()
+  const { courseId, lessonId } = useParams()
   const navigate = useNavigate()
-  const lesson = getLesson(lessonId)
-  const { completed, percent, loading, error, toggleLesson } = useProgress()
+  const course = getCourse(courseId)
+  const lesson = getCourseLesson(courseId, lessonId)
+  const { completed, percent, loading, error, toggleLesson } = useProgress(courseId)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem('eagles-sidebar-collapsed') === 'true')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -23,9 +24,16 @@ export default function LessonPage() {
     setMobileMenuOpen(false)
   }, [lessonId])
 
-  if (!lesson) return <Navigate to={`/curso/${course.id}/leccion/${course.modules[0].lessons[0].id}`} replace />
+  if (!course) return <Navigate to="/inicio" replace />
 
-  const { previous, next } = getLessonNeighbors(lesson.id)
+  if (!lesson) {
+    const firstLessonId = getFirstLessonIdForCourse(course.id)
+    return firstLessonId
+      ? <Navigate to={`/curso/${course.id}/leccion/${firstLessonId}`} replace />
+      : <Navigate to={`/curso/${course.id}`} replace />
+  }
+
+  const { previous, next } = getLessonNeighborsForCourse(course.id, lesson.id)
   const isCompleted = completed.has(lesson.id)
   const module = course.modules.find((item) => item.id === lesson.moduleId)
   const lessonIndex = module.lessons.findIndex((item) => item.id === lesson.id) + 1
@@ -55,8 +63,8 @@ export default function LessonPage() {
   }
 
   return (
-    <main className={`course-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <CourseSidebar completed={completed} percent={percent} collapsed={sidebarCollapsed} open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+    <main className={`course-shell course-theme--${course.theme || 'default'} ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <CourseSidebar course={course} completed={completed} percent={percent} collapsed={sidebarCollapsed} open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <section className="lesson-page">
         <header className="lesson-topbar">
           <button className="course-menu-toggle" type="button" onClick={toggleCourseMenu} aria-label={sidebarCollapsed ? 'Mostrar temario' : 'Ocultar temario'}>
@@ -78,7 +86,7 @@ export default function LessonPage() {
             {lesson.duration && <span className="lesson-duration"><Clock3 />{lesson.duration}</span>}
           </div>
 
-          <VideoPlayer videoId={lesson.videoId} title={lesson.title} />
+          <VideoPlayer videoId={lesson.videoId} title={lesson.title} provider={lesson.videoProvider} sourceHint={lesson.sourceHint} />
 
           <div className="lesson-under-video">
             <div className="lesson-summary"><span><ListChecks /></span><div><small>EN ESTA CLASE</small><p>{lesson.summary}</p></div></div>
@@ -90,7 +98,7 @@ export default function LessonPage() {
           {error && <div className="progress-error">{error}</div>}
 
           <div className="lesson-navigation">
-            {previous ? <button onClick={() => navigate(`/curso/${course.id}/leccion/${previous.id}`)}><ChevronLeft /><span><small>ANTERIOR</small><strong>{previous.title}</strong></span></button> : <span />}
+            {previous ? <button onClick={() => navigate(`/curso/${course.id}/leccion/${previous.id}`)}><ChevronLeft /><span><small>ANTERIOR</small><strong>{previous.title}</strong></span></button> : <button onClick={() => navigate(`/curso/${course.id}`)}><ChevronLeft /><span><small>REGRESAR</small><strong>Dashboard del curso</strong></span></button>}
             {next ? <button className="next" onClick={completeAndContinue}><span><small>SIGUIENTE</small><strong>{next.title}</strong></span><ChevronRight /></button> : <button className="next" disabled={loading} onClick={finishCourse}><span><small>FINALIZAR</small><strong>{isCompleted ? 'Ver cierre del curso' : 'Completar el curso'}</strong></span><CheckCircle2 /></button>}
           </div>
         </div>

@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 
 const source = 'eagles-crm'
-const allowedCourseIds = new Set(['seminario-empresarial'])
+const allowedCourseIds = new Set(['seminario-empresarial', 'cvt-elite'])
 
 function send(res, status, body) {
   res.status(status).json(body)
