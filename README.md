@@ -81,3 +81,7 @@ Sube el proyecto a GitHub e impórtalo desde Vercel. El archivo `vercel.json` ya
 ## CVT Elite (actualización septiembre 2026)
 
 El Campus ahora soporta múltiples cursos por alumno. La capacitación `cvt-elite` tiene dashboard propio, progreso independiente y 25 módulos de video preparados. Para activar la base de datos ejecuta `Migracion_CVT_Elite.sql` en el Supabase del Campus. Los IDs de video se administran en `src/data/cvtEliteData.js`. Consulta `GUIA_CVT_ELITE.md` para el flujo completo.
+
+## Materiales y entregables
+
+Los dashboards de CVT Elite y Transmisiones Automáticas desde Cero incluyen una sección para PDFs, manuales y entregables. La configuración está en `src/data/courseMaterials.js`. Consulta `GUIA_MATERIALES_ENTREGABLES.md`.

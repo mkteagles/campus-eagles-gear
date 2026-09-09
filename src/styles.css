@@ -877,3 +877,140 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
   line-height: 1.65;
   color: var(--text-secondary, rgba(255, 255, 255, 0.72));
 }
+
+/* ==========================================================
+   MATERIALES / ENTREGABLES DE CURSO
+   ========================================================== */
+.course-dashboard__materials-heading {
+  margin-top: 4rem;
+}
+
+.course-materials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.course-material-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  border: 1px solid #202a37;
+  background: linear-gradient(145deg, rgba(255,255,255,.018), transparent 48%), #090d13;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.course-material-card.is-available:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 195, 35, .42);
+  background: #0c1118;
+}
+
+.course-material-card.is-pending {
+  border-style: dashed;
+  opacity: .82;
+}
+
+.course-material-card__icon {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.15rem;
+  border: 1px solid rgba(255, 195, 35, .28);
+  color: #f1c350;
+  background: rgba(255, 190, 0, .06);
+}
+
+.course-material-card__icon svg {
+  width: 1.25rem;
+}
+
+.course-material-card__content {
+  flex: 1;
+}
+
+.course-material-card__content small {
+  color: #6f7d90;
+  font-size: .56rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.course-material-card__content h3 {
+  margin: .4rem 0 .65rem;
+  color: #f4f6f8;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.55rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.course-material-card__content p {
+  margin: 0;
+  color: #78869a;
+  font-size: .7rem;
+  line-height: 1.55;
+}
+
+.course-material-card__footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #1c2531;
+}
+
+.course-material-card__footer a {
+  width: 100%;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border: 1px solid #725b18;
+  color: #ffd05d;
+  background: rgba(255,190,0,.05);
+  font-size: .66rem;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.course-material-card__footer a:hover {
+  color: #080808;
+  background: #e7b631;
+}
+
+.course-material-card__footer a svg {
+  width: .9rem;
+}
+
+.course-material-card__footer span {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  color: #758297;
+  font-size: .65rem;
+  font-weight: 700;
+}
+
+[data-theme='light'] .course-material-card {
+  border-color: #d0d6df;
+  background: #fff;
+  box-shadow: 0 20px 55px rgba(31,41,55,.06);
+}
+
+[data-theme='light'] .course-material-card__content h3 { color: #1d2228; }
+[data-theme='light'] .course-material-card__footer { border-color: #e0e4e9; }
+
+@media (max-width: 900px) {
+  .course-materials-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 650px) {
+  .course-materials-grid { grid-template-columns: 1fr; }
+  .course-material-card { min-height: 195px; }
+}

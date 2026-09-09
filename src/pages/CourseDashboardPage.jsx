@@ -1,10 +1,11 @@
-import { BookOpenCheck, CheckCircle2, ChevronRight, LogOut, PlayCircle, Sparkles } from 'lucide-react'
+import { BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, FileText, FolderOpen, LogOut, PlayCircle, Sparkles } from 'lucide-react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import LoadingScreen from '../components/LoadingScreen'
 import ProgressRing from '../components/ProgressRing'
 import { useAuth } from '../context/auth-context'
 import { getCourse, getCourseLessons } from '../data/courses'
+import { getCourseMaterials } from '../data/courseMaterials'
 import { useProgress } from '../hooks/useProgress'
 
 export default function CourseDashboardPage() {
@@ -20,6 +21,8 @@ export default function CourseDashboardPage() {
   const lessons = getCourseLessons(course.id)
   const firstPending = lessons.find((lesson) => !completed.has(lesson.id)) || lessons[0]
   const completedCount = lessons.filter((lesson) => completed.has(lesson.id)).length
+  const materials = getCourseMaterials(course.id)
+  const availableMaterials = materials.filter((material) => Boolean(material.url)).length
 
   return (
     <main className={`course-dashboard course-dashboard--${course.theme || 'default'}`}>
@@ -80,6 +83,42 @@ export default function CourseDashboardPage() {
                   <span>{doneCount}/{moduleLessons.length} videos</span>
                   {destination && (
                     <button type="button" onClick={() => navigate(`/curso/${course.id}/leccion/${destination.id}`)} aria-label={`Abrir ${module.title}`}><ChevronRight /></button>
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
+
+        <div className="course-dashboard__section-heading course-dashboard__materials-heading">
+          <div>
+            <span className="eyebrow">MATERIAL DE APOYO</span>
+            <h2>Entregables y manuales</h2>
+          </div>
+          <span>{availableMaterials}/{materials.length} disponibles</span>
+        </div>
+
+        <div className="course-materials-grid">
+          {materials.map((material) => {
+            const available = Boolean(material.url)
+
+            return (
+              <article className={`course-material-card ${available ? 'is-available' : 'is-pending'}`} key={material.id}>
+                <div className="course-material-card__icon">
+                  {available ? <FileText /> : <FolderOpen />}
+                </div>
+                <div className="course-material-card__content">
+                  <small>{material.type}</small>
+                  <h3>{material.title}</h3>
+                  <p>{material.description}</p>
+                </div>
+                <div className="course-material-card__footer">
+                  {available ? (
+                    <a href={material.url} target="_blank" rel="noreferrer">
+                      <Download /> Abrir material <ExternalLink />
+                    </a>
+                  ) : (
+                    <span>Archivo pendiente de cargar</span>
                   )}
                 </div>
               </article>

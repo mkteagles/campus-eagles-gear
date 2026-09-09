@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "=== EAGLES CAMPUS · CVT ELITE ===" -ForegroundColor Yellow
+Write-Host "=== EAGLES CAMPUS · CVT ELITE + ENTREGABLES ===" -ForegroundColor Yellow
 Write-Host ""
 
 if (-not (Test-Path ".git")) {
@@ -30,13 +30,13 @@ if ($LASTEXITCODE -eq 0) {
   exit 0
 }
 
-$commitMessage = "Agrega dashboard CVT Elite al Campus"
+$commitMessage = "Agrega entregables y manuales a CVT Elite y curso nuevo"
 git commit -m $commitMessage
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-Write-Host "4/4 Subiendo a GitHub..." -ForegroundColor Cyan
-git push origin main
+Write-Host "4/4 Subiendo el commit actual a main..." -ForegroundColor Cyan
+git push origin HEAD:main
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host ""
-Write-Host "LISTO. Cambios subidos a main." -ForegroundColor Green
+Write-Host "LISTO. Cambios subidos a origin/main." -ForegroundColor Green
