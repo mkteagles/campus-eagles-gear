@@ -1,5 +1,5 @@
-import { BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, Eye, FileText, FolderOpen, LogOut, PlayCircle, Sparkles } from 'lucide-react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { BookOpen, BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, Eye, FileText, FolderOpen, LogOut, PlayCircle, ShieldCheck, Sparkles } from 'lucide-react'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import LoadingScreen from '../components/LoadingScreen'
 import ProgressRing from '../components/ProgressRing'
@@ -11,7 +11,7 @@ import { useProgress } from '../hooks/useProgress'
 export default function CourseDashboardPage() {
   const { courseId } = useParams()
   const navigate = useNavigate()
-  const { profile, user, signOut } = useAuth()
+  const { profile, user, isAdmin, signOut } = useAuth()
   const course = getCourse(courseId)
   const { completed, percent, loading } = useProgress(courseId)
 
@@ -29,6 +29,12 @@ export default function CourseDashboardPage() {
       <header className="course-dashboard__header">
         <BrandMark />
         <div className="course-dashboard__account">
+          {isAdmin && (
+            <nav className="course-dashboard__admin-nav" aria-label="Navegación de administrador">
+              <Link to="/cursos"><BookOpen /> Cursos</Link>
+              <Link to="/admin"><ShieldCheck /> Panel admin</Link>
+            </nav>
+          )}
           <span><strong>{profile?.full_name || 'Alumno'}</strong><small>{user?.email}</small></span>
           <button type="button" onClick={signOut} aria-label="Cerrar sesión"><LogOut /></button>
         </div>

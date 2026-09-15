@@ -74,7 +74,7 @@ export default function CourseSidebar({ course, completed, percent, collapsed, o
             <ChevronDown className="account-menu__chevron" />
           </summary>
           <div className="account-menu__panel">
-            <NavLink to="/inicio" onClick={onClose}><LayoutDashboard /> Mis cursos</NavLink>
+            <NavLink to="/cursos" onClick={onClose}><LayoutDashboard /> Mis cursos</NavLink>
             <NavLink to="/cambiar-contrasena" onClick={onClose}><KeyRound /> Cambiar contraseña</NavLink>
             {isAdmin && <NavLink to="/admin" onClick={onClose}><LayoutDashboard /> Panel administrativo</NavLink>}
             <button onClick={signOut}><LogOut /> Cerrar sesión</button>

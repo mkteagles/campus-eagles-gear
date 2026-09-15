@@ -152,7 +152,7 @@ export default function AdminPage() {
       <header className="admin-header">
         <BrandMark />
         <nav>
-          <Link to="/inicio"><BookOpen /> Ver cursos</Link>
+          <Link to="/cursos"><BookOpen /> Ver cursos</Link>
           <span>{profile?.full_name || profile?.email}</span>
           <button onClick={signOut} aria-label="Cerrar sesión"><LogOut /></button>
         </nav>

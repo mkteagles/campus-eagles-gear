@@ -59,3 +59,11 @@ Se agregaron 16 grabaciones adicionales de Vimeo como un tercer bloque del curso
 - **Workshop Elite — Sesiones adicionales**
 
 Como los enlaces no venían acompañados de un temario o nombre técnico, se dejaron títulos neutrales para no inventar contenido. El ID `1227004397` llegó dos veces (sesiones 01 y 03) y se conserva de esa manera hasta recibir confirmación.
+
+## Navegación de administrador (15 SEP 2026)
+
+- `/cursos` muestra el catálogo de capacitaciones disponibles.
+- El botón **Ver cursos** del panel `/admin` ahora abre `/cursos` directamente.
+- Los administradores ven **Cursos** y **Panel admin** en el encabezado de cada dashboard de curso.
+- Dentro de una lección, el menú de cuenta mantiene el acceso a **Panel administrativo** y **Mis cursos** ahora dirige a `/cursos`.
+- Los controles administrativos solo se muestran si `student_profiles.role = 'admin'` y el perfil está activo.
