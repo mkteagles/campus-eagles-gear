@@ -51,3 +51,11 @@ No volver a ejecutar toda la base original si el Campus ya está funcionando.
 
 Los materiales disponibles muestran dos acciones: **Ver PDF** abre el documento en una pestaña nueva y **Descargar PDF** descarga el archivo directamente desde el Campus.
 
+
+## Actualización 15/09/2026 · Workshop Elite
+
+Se agregaron 16 grabaciones adicionales de Vimeo como un tercer bloque del curso:
+
+- **Workshop Elite — Sesiones adicionales**
+
+Como los enlaces no venían acompañados de un temario o nombre técnico, se dejaron títulos neutrales para no inventar contenido. El ID `1227004397` llegó dos veces (sesiones 01 y 03) y se conserva de esa manera hasta recibir confirmación.

@@ -6,12 +6,17 @@
 // Estructura actual:
 //   Módulo 01 · Grabaciones en Vivo — CVT JF011 y JF017 (11 videos)
 //   Módulo 02 · Mentoría Elite — CVT JF015 (7 videos)
+//   Módulo 03 · Workshop Elite — Sesiones adicionales (16 videos)
 //
 // IMPORTANTE:
 // El video 07 del módulo JF015 llegó con el mismo ID que el video 02
 // (1123980579). Se conserva exactamente como fue enviado para no perder
 // ningún lugar del temario. Cuando llegue el ID correcto, cambia únicamente
 // ese videoId.
+//
+// Los videos adicionales recibidos el 15/09/2026 no traían tema/título técnico.
+// Se agregan como 'Sesiones adicionales' para no inventar contenido.
+// El ID 1227004397 llegó dos veces (sesiones 01 y 03) y se conserva tal cual.
 // ============================================================
 
 export const CVT_ELITE_COURSE_ID = 'cvt-elite'
@@ -38,6 +43,25 @@ const mentorshipJf015 = [
   '1123975455',
   '1123980000',
   '1123980579', // Duplicado recibido por WhatsApp; reemplazar cuando llegue el ID correcto.
+]
+
+const workshopEliteAdditional = [
+  '1227004397',
+  '1227024426',
+  '1227004397', // Duplicado recibido; conservar hasta confirmar si el tercero era otro video.
+  '1227026348',
+  '1227026786',
+  '1227027152',
+  '1227027455',
+  '1227027774',
+  '1227028087',
+  '1227028414',
+  '1227028785',
+  '1227031188',
+  '1227031547',
+  '1227031982',
+  '1227032453',
+  '1227033055',
 ]
 
 function buildLessons({ prefix, label, titlePrefix, videoIds, intro, summary }) {
@@ -93,6 +117,21 @@ export const cvtEliteCourse = {
         videoIds: mentorshipJf015,
         intro: 'Mentoría exclusiva de CVT Elite enfocada en la transmisión JF015, con explicación técnica y acompañamiento aplicado.',
         summary: 'Utiliza esta sesión para reforzar el diagnóstico, comprender criterios de reparación y repasar los puntos técnicos revisados durante la mentoría.',
+      }),
+    },
+
+    {
+      id: 'workshop-elite-sesiones-adicionales',
+      number: '03',
+      title: 'Workshop Elite — Sesiones adicionales',
+      description: 'Sesiones adicionales recibidas como parte de Workshop Elite. Se mantienen con nombres neutrales hasta confirmar el tema técnico de cada grabación.',
+      lessons: buildLessons({
+        prefix: 'elite-workshop-adicional',
+        label: 'Sesión',
+        titlePrefix: 'Workshop Elite',
+        videoIds: workshopEliteAdditional,
+        intro: 'Grabación adicional incluida dentro de Workshop Elite. El tema específico de esta sesión está pendiente de confirmación, por lo que se conserva un título neutral.',
+        summary: 'Revisa la sesión completa como parte del contenido complementario de CVT Elite. Cuando se confirme el tema técnico, el título y la descripción pueden actualizarse sin cambiar el video.',
       }),
     },
   ],
