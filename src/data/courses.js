@@ -1,7 +1,8 @@
 import { course as seminarioCourse } from './courseData'
 import { cvtEliteCourse } from './cvtEliteData'
+import { newCourses } from './newCoursesData'
 
-export const courses = [seminarioCourse, cvtEliteCourse]
+export const courses = [seminarioCourse, cvtEliteCourse, ...newCourses]
 
 export function getCourse(courseId) {
   return courses.find((item) => item.id === courseId) || null
@@ -12,7 +13,7 @@ export function getCourseLessons(courseId) {
   if (!course) return []
 
   return course.modules.flatMap((module) =>
-    module.lessons.map((lesson) => ({
+    (module.lessons || []).map((lesson) => ({
       ...lesson,
       moduleId: module.id,
       moduleTitle: module.title,

@@ -229,7 +229,7 @@ export default function AdminPage() {
               <label>Empresa o taller<input value={form.companyName} onChange={(event) => setField('companyName', event.target.value)} placeholder="Nombre del taller" /></label>
               <label>Contraseña temporal<div className="admin-password"><KeyRound /><input value={form.password} onChange={(event) => setField('password', event.target.value)} placeholder="Mínimo 8 caracteres" minLength="8" required /><button type="button" onClick={generatePassword}>Generar</button><button type="button" onClick={() => navigator.clipboard?.writeText(form.password)} aria-label="Copiar contraseña"><Copy /></button></div></label>
               <button className="primary-button primary-button--wide" disabled={saving}>{saving ? <LoaderCircle className="spin" /> : <><Plus /> Crear usuario</>}</button>
-              <p className="form-security-note"><ShieldCheck /> Para los dos clientes Elite: selecciona <strong>CVT Elite</strong>, crea el usuario y comparte las credenciales.</p>
+              <p className="form-security-note"><ShieldCheck /> Selecciona exactamente el curso que compró el alumno. Después puedes agregar o retirar más accesos desde la tabla.</p>
             </form>
           </aside>
         </div>

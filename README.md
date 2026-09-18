@@ -85,3 +85,7 @@ El Campus ahora soporta múltiples cursos por alumno. La capacitación `cvt-elit
 ## Materiales y entregables
 
 Los dashboards de CVT Elite y Transmisiones Automáticas desde Cero incluyen una sección para PDFs, manuales y entregables. La configuración está en `src/data/courseMaterials.js`. Consulta `GUIA_MATERIALES_ENTREGABLES.md`.
+
+## Actualización 18/09/2026 · Catálogo multicurso
+
+Se prepararon ocho cursos adicionales sin inventar contenido: CVT JF011, CVT JF017, CVT JF015, DSG DQ200, DSG DQ250, Programación GM, 6L80 y Curso Empresarial. Ejecuta `Migracion_Nuevos_Cursos_18SEP.sql` en el Supabase del Campus antes de asignarlos a alumnos. Consulta `GUIA_NUEVOS_CURSOS_18SEP.md`.

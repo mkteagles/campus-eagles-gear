@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, LogOut, ShieldCheck } from 'lucide-react'
+import { BookOpen, ChevronRight, Clock3, LogOut, ShieldCheck } from 'lucide-react'
 import { Link, Navigate } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import { useAuth } from '../context/auth-context'
@@ -39,7 +39,7 @@ export default function CourseCatalogPage() {
           <h1>{isAdmin ? 'Cursos del campus' : 'Mis cursos'}</h1>
           <p>
             {isAdmin
-              ? 'Como administrador puedes entrar a cualquier capacitación y regresar al panel de accesos cuando lo necesites.'
+              ? 'Como administrador puedes entrar a cualquier capacitación, revisar su estructura y regresar al panel de accesos cuando lo necesites.'
               : 'Selecciona la capacitación a la que tienes acceso.'}
           </p>
         </div>
@@ -47,20 +47,22 @@ export default function CourseCatalogPage() {
         <div className="course-catalog-grid">
           {visibleCourses.map((course) => {
             const lessonCount = getCourseLessons(course.id).length
+            const comingSoon = course.contentStatus === 'coming-soon' || lessonCount === 0
+
             return (
-              <article className={`course-catalog-card course-catalog-card--${course.theme || 'default'}`} key={course.id}>
-                <div className="course-catalog-card__icon"><BookOpen /></div>
+              <article className={`course-catalog-card course-catalog-card--${course.theme || 'default'} ${comingSoon ? 'is-coming-soon' : ''}`} key={course.id}>
+                <div className="course-catalog-card__icon">{comingSoon ? <Clock3 /> : <BookOpen />}</div>
                 <div className="course-catalog-card__body">
                   <small>{course.eyebrow || 'CAPACITACIÓN'}</small>
                   <h2>{course.title}</h2>
                   <p>{course.description}</p>
                 </div>
                 <div className="course-catalog-card__meta">
-                  <span>{course.modules.length} módulos</span>
-                  <span>{lessonCount} videos</span>
+                  <span>{course.modules.length} {course.modules.length === 1 ? 'módulo' : 'módulos'}</span>
+                  <span>{comingSoon ? 'Contenido en preparación' : `${lessonCount} videos`}</span>
                 </div>
                 <Link to={`/curso/${course.id}`}>
-                  Entrar al curso <ChevronRight />
+                  {comingSoon ? 'Ver espacio del curso' : 'Entrar al curso'} <ChevronRight />
                 </Link>
               </article>
             )

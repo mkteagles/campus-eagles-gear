@@ -1246,3 +1246,35 @@ label { display: flex; flex-direction: column; gap: .58rem; color: #d9e0ea; font
   .course-dashboard__admin-nav a svg { width: 1.05rem; height: 1.05rem; }
   .course-dashboard__account { gap: .45rem; }
 }
+
+/* ==========================================================
+   CURSOS EN PREPARACIÓN · CATÁLOGO MULTICURSO
+   ========================================================== */
+.course-catalog-card.is-coming-soon {
+  border-style: dashed;
+}
+.course-catalog-card.is-coming-soon .course-catalog-card__icon {
+  color: #a8b2c0;
+  background: rgba(255,255,255,.04);
+}
+.course-catalog-card.is-coming-soon .course-catalog-card__meta span:last-child {
+  color: #d7b757;
+  border-color: rgba(215,183,87,.28);
+}
+
+/* Con muchos cursos, evita que cada fila del admin crezca demasiado. */
+.course-access-list {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: .25rem;
+  scrollbar-width: thin;
+}
+
+@media (min-width: 1180px) {
+  .course-catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .course-catalog-card {
+    min-height: 340px;
+  }
+}

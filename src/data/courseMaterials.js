@@ -5,6 +5,37 @@
 // externas (por ejemplo Google Drive). Cada curso mantiene su propia lista.
 // ============================================================
 
+
+
+function pendingMaterialSet(courseId, courseTitle) {
+  return [
+    {
+      id: `${courseId}-manuales`,
+      group: courseTitle,
+      title: 'Manuales de apoyo',
+      description: `Manuales y documentación técnica del curso ${courseTitle}.`,
+      type: 'PDF · Manual',
+      url: '',
+    },
+    {
+      id: `${courseId}-diagramas`,
+      group: courseTitle,
+      title: 'Diagramas y material técnico',
+      description: `Diagramas, boletines y material técnico complementario del curso ${courseTitle}.`,
+      type: 'PDF · Material técnico',
+      url: '',
+    },
+    {
+      id: `${courseId}-entregables`,
+      group: courseTitle,
+      title: 'Entregables del curso',
+      description: `Archivos adicionales incluidos en la capacitación ${courseTitle}.`,
+      type: 'Archivos',
+      url: '',
+    },
+  ]
+}
+
 export const courseMaterials = {
   'cvt-elite': [
     {
@@ -117,6 +148,16 @@ export const courseMaterials = {
       url: '',
     },
   ],
+
+  'cvt-jf011': pendingMaterialSet('cvt-jf011', 'CVT JF011'),
+  'cvt-jf017': pendingMaterialSet('cvt-jf017', 'CVT JF017'),
+  'cvt-jf015': pendingMaterialSet('cvt-jf015', 'CVT JF015'),
+  'dsg-dq200': pendingMaterialSet('dsg-dq200', 'DSG DQ200'),
+  'dsg-dq250': pendingMaterialSet('dsg-dq250', 'DSG DQ250'),
+  'programacion-gm': pendingMaterialSet('programacion-gm', 'Programación GM'),
+  '6l80': pendingMaterialSet('6l80', '6L80'),
+  'curso-empresarial': pendingMaterialSet('curso-empresarial', 'Curso Empresarial'),
+
 }
 
 export function getCourseMaterials(courseId) {

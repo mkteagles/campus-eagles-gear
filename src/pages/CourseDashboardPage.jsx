@@ -1,4 +1,4 @@
-import { BookOpen, BookOpenCheck, CheckCircle2, ChevronRight, Download, ExternalLink, Eye, FileText, FolderOpen, LogOut, PlayCircle, ShieldCheck, Sparkles } from 'lucide-react'
+import { BookOpen, BookOpenCheck, CheckCircle2, ChevronRight, Clock3, Download, ExternalLink, Eye, FileText, FolderOpen, LogOut, PlayCircle, ShieldCheck, Sparkles } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import BrandMark from '../components/BrandMark'
 import LoadingScreen from '../components/LoadingScreen'
@@ -23,6 +23,7 @@ export default function CourseDashboardPage() {
   const completedCount = lessons.filter((lesson) => completed.has(lesson.id)).length
   const materials = getCourseMaterials(course.id)
   const availableMaterials = materials.filter((material) => Boolean(material.url)).length
+  const comingSoon = course.contentStatus === 'coming-soon' || lessons.length === 0
 
   return (
     <main className={`course-dashboard course-dashboard--${course.theme || 'default'}`}>
@@ -42,7 +43,7 @@ export default function CourseDashboardPage() {
 
       <section className="course-dashboard__hero">
         <div className="course-dashboard__hero-copy">
-          <span className="elite-chip"><Sparkles /> PROGRAMA EXCLUSIVO</span>
+          <span className="elite-chip">{comingSoon ? <Clock3 /> : <Sparkles />} {comingSoon ? 'CONTENIDO EN PREPARACIÓN' : 'PROGRAMA EXCLUSIVO'}</span>
           <small>{course.eyebrow}</small>
           <h1>{course.title}</h1>
           <p>{course.description}</p>
@@ -56,9 +57,9 @@ export default function CourseDashboardPage() {
         <div className="course-dashboard__progress-card">
           <ProgressRing value={percent} />
           <div>
-            <small>PROGRESO GENERAL</small>
-            <strong>{completedCount} de {lessons.length}</strong>
-            <span>videos completados</span>
+            <small>{comingSoon ? 'ESTADO DEL CURSO' : 'PROGRESO GENERAL'}</small>
+            <strong>{comingSoon ? 'Próximamente' : `${completedCount} de ${lessons.length}`}</strong>
+            <span>{comingSoon ? 'contenido en preparación' : 'videos completados'}</span>
           </div>
         </div>
       </section>
@@ -86,7 +87,7 @@ export default function CourseDashboardPage() {
                 <h3>{module.title}</h3>
                 <p>{module.description}</p>
                 <div className="elite-module-card__footer">
-                  <span>{doneCount}/{moduleLessons.length} videos</span>
+                  <span>{moduleLessons.length ? `${doneCount}/${moduleLessons.length} videos` : 'Contenido pendiente de cargar'}</span>
                   {destination && (
                     <button type="button" onClick={() => navigate(`/curso/${course.id}/leccion/${destination.id}`)} aria-label={`Abrir ${module.title}`}><ChevronRight /></button>
                   )}

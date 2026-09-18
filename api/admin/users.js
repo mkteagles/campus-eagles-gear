@@ -2,7 +2,18 @@ import { createClient } from '@supabase/supabase-js'
 
 const allowedRoles = new Set(['admin', 'student'])
 const allowedStatuses = new Set(['active', 'inactive', 'blocked'])
-const allowedCourseIds = new Set(['seminario-empresarial', 'cvt-elite'])
+const allowedCourseIds = new Set([
+  'seminario-empresarial',
+  'cvt-elite',
+  'cvt-jf011',
+  'cvt-jf017',
+  'cvt-jf015',
+  'dsg-dq200',
+  'dsg-dq250',
+  'programacion-gm',
+  '6l80',
+  'curso-empresarial',
+])
 const defaultCourseId = 'cvt-elite'
 
 function normalizeEaglesEmail(value) {
